@@ -82,6 +82,13 @@ SideEffectKind UnaryOperatorInst::getSideEffect() {
     return SideEffectKind::Unknown;
   }
 
+  // Negating a BigInt can throw when the result would exceed the maximum
+  // representable BigInt size, so DCE must not treat it as removable.
+  if (getOperatorKind() == OpKind::MinusKind &&
+      getSingleOperand()->getType().canBeBigInt()) {
+    return SideEffectKind::Unknown;
+  }
+
   if (isSideEffectFree(getSingleOperand()->getType())) {
     return SideEffectKind::None;
   }

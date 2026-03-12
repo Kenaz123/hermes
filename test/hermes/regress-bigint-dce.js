@@ -51,4 +51,15 @@ try {
 }
 //CHECK-NEXT: RangeError: Division by zero
 
+// Unary minus on a large negative BigInt can also throw if the result would
+// need more than the maximum number of digits.
+let a = BigInt.asUintN(65472, -1n);
+let b = -a;
+try {
+    -b;
+} catch (e) {
+    print(e);
+}
+//CHECK-NEXT: RangeError: Maximum BigInt size exceeded
+
 })();
